@@ -11,7 +11,7 @@
 }
 
 #addresses {
-  [zoom >= 17] {
+  [zoom >= 18] {
     text-name: "[addr_housename]";
     ["addr_housenumber" != null] {
       text-name: [addr_housenumber];

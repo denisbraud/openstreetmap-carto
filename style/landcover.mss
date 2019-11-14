@@ -15,12 +15,12 @@
 @built-up-z12: #dddddd;
 @residential: #e0dfdf;      // Lch(89,0,0)
 @residential-line: #b9b9b9; // Lch(75,0,0)
-@retail: #ffd6d1;           // Lch(89,16,30)
-@retail-line: #d99c95;      // Lch(70,25,30)
-@commercial: #f2dad9;       // Lch(89,8.5,25)
-@commercial-line: #d1b2b0;  // Lch(75,12,25)
-@industrial: #ebdbe8;       // Lch(89,9,330) (Also used for railway, wastewater_plant)
-@industrial-line: #c6b3c3;  // Lch(75,11,330) (Also used for railway-line, wastewater_plant-line)
+@retail: #e0dfdf;           // Lch(89,16,30) osm ffd6d1
+@retail-line: #b9b9b9;      // Lch(70,25,30) osm d99c95
+@commercial: #e0dfdf;       // Lch(89,8.5,25)osm f2dad9
+@commercial-line: #b9b9b9;  // Lch(75,12,25) osm d1b2b0
+@industrial: #e0dfdf;       // Lch(89,9,330) osm ebdbe8 (Also used for railway, wastewater_plant)
+@industrial-line: #b9b9b9;  // Lch(75,11,330)osm c6b3c3 (Also used for railway-line, wastewater_plant-line)
 @farmland: #eef0d5;         // Lch(94,14,112)
 @farmland-line: #c7c9ae;    // Lch(80,14,112)
 @farmyard: #f5dcba;         // Lch(89,20,80)
@@ -31,7 +31,7 @@
 @transportation-area: #e9e7e2;
 @apron: #dadae0;
 @garages: #dfddce;
-@parking: #eeeeee;
+@parking: #e0dfdf;
 @parking-outline: saturate(darken(@parking, 40%), 20%);
 @railway: @industrial;
 @railway-line: @industrial-line;
