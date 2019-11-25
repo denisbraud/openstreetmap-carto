@@ -1,0 +1,74 @@
+FROM ubuntu:bionic
+
+# see <https://switch2osm.org/serving-tiles/manually-building-a-tile-server-18-04-lts/>
+
+# Install a suitable version of the carto compiler
+RUN apt-get update -y && apt-get install -y nodejs npm node-gyp libssl1.0-dev nodejs-dev
+
+# Install CartoCSS
+RUN npm install -g carto@1.2.0
+
+# Uninstall libssl1.0-dev
+# libssl1.0-dev required by npm not compatible with libssl-dev required by libmapnik-dev
+# libmapnik-dev=3.0.19+ds-1 (bionic version https://www.ubuntuupdates.org/pm/libmapnik-dev)
+# libssl-dev=1.1.1-1ubuntu2.1~18.04.8
+# https://askubuntu.com/questions/1125036/installing-nodejs-dev-fails-depending-on-libssl1-0-dev-but-i-have-already-inst
+# https://bugs.launchpad.net/ubuntu/+source/nodejs/+bug/1794589
+RUN apt-get remove -y npm node-gyp libssl1.0-dev nodejs-dev
+
+# variety of dependencies
+# Mapnik
+# Fonts (use https://packages.debian.org/sid/fonts-noto + unifont)
+# No install for osm2pgsql and postgresql (see Dockerfile.import) : use only postgresql-client
+RUN apt-get update -y && apt-get install -y \
+    libboost-all-dev git-core tar unzip wget bzip2 build-essential autoconf libtool libxml2-dev \
+	libgeos-dev libgeos++-dev libpq-dev libbz2-dev libproj-dev \
+	munin-node munin libprotobuf-c0-dev protobuf-c-compiler libfreetype6-dev libtiff5-dev libicu-dev \
+	libmapnik-dev libgdal-dev libmysqlclient-dev libssl-dev \
+	libcairo-dev libcairomm-1.0-dev \
+	apache2 apache2-dev \
+	libagg-dev liblua5.2-dev lua5.1 liblua5.1-dev libgeotiff-epsg \
+	
+	make gdal-bin mapnik-utils python-mapnik python3-psycopg2 \
+	
+	fonts-noto unifont ttf-unifont \
+	
+    postgresql-client
+
+
+# Install mod_tile and renderd
+#We rely on the last commit of the switch2osm's branch at the time of this Dockerfile
+ENV MOD_TILE_VERSION aa3d8edd778220e8e701e56d8bc7f16286060520
+ENV MOD_TILE_PARALLEL_BUILD 4
+RUN cd /tmp && git clone --branch switch2osm https://github.com/SomeoneElseOSM/mod_tile.git && \
+    cd /tmp/mod_tile && \
+    git reset --hard $MOD_TILE_VERSION && \
+    ./autogen.sh && \
+    ./configure && \
+    make -j $MOD_TILE_PARALLEL_BUILD && \
+    make install && \
+    make install-mod_tile && \
+    ldconfig && \
+    # Build to meta2tile utility and copy onto system path
+    cd extra && \
+    make && \
+    cp meta2tile /usr/local/bin && \
+    # Tidy up
+    cd /tmp && rm -rf /tmp/mod_tile
+
+# see https://github.com/SomeoneElseOSM/mod_tile/blob/switch2osm/renderd.conf
+RUN cp -p /usr/local/etc/renderd.conf /usr/local/etc/renderd.conf.orig && \
+    cat /usr/local/etc/renderd.conf.orig | grep -v "XML=" > /usr/local/etc/renderd.conf && \
+	echo "XML=/openstreetmap-carto/mapnik.xml" >> /usr/local/etc/renderd.conf
+RUN cat /usr/local/etc/renderd.conf
+
+# Create the files required for the mod_tile system to run
+RUN mkdir /var/run/renderd && chown 1000 /var/run/renderd
+RUN mkdir /var/lib/mod_tile && chown 1000 /var/lib/mod_tile
+
+# Closing section
+RUN mkdir -p /openstreetmap-carto
+WORKDIR /openstreetmap-carto
+
+USER 1000
+CMD sh scripts/docker-startup.sh render

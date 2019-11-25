@@ -24,6 +24,13 @@ Read on below to get the details.
 * `docker-compose up import` to import the data (only necessary the first time or when you change the data file)
 * `docker-compose up kosmtik` to run the style preview application
 * browse to [http://localhost:6789](http://localhost:6789) to view the output of Kosmtik
+
+Optionally generate static tiles for a small area
+
+* `docker-compose up render` to generate static tiles for bounds and zoom defined in scripts/render.sh 
+
+Stop the containers
+
 * Ctrl+C to stop the style preview application
 * `docker-compose stop db` to stop the database container
 
@@ -66,7 +73,39 @@ If you want to have a [local configuration](https://github.com/kosmtik/kosmtik#l
 
 The shapefile data that is downloaded is owned by the user with UID 1000. If you have another default user id on your system, consider changing the line `USER 1000` in the file `Dockerfile`.
 
-After startup is complete you can browse to [http://localhost:6789](http://localhost:6789) to view the output of Kosmtik. By pressing Ctrl+C on the command line you can stop the container. The PostgreSQL database container is still running then (you can check with `docker ps`). If you want to stop the database container as well you can do so by running `docker-compose stop db` in the openstreetmap-carto directory.
+After startup is complete you can browse to [http://localhost:6789](http://localhost:6789) to view the output of Kosmtik.
+
+## Optionally generate static tiles for a small area
+
+You can use the komstik server as tile server (http://localhost:6789/openstreetmap-carto/tile/{z}/{x}/{y}.png).
+But you can also, for a small area, prerender all tiles and serve them through a simple webserver like Apache
+or in a static way (file:///C:/path/openstreetmap-carto/data/render/{z}/{x}/{y}.png).
+
+Defined your bounds (X Y min and max) and zooms (min and max) in scripts/render.sh.
+Use `docker-compose up render` to generate static tiles in data/render.
+
+Example : Statistics for Rennes France
+
+```
+Execution time : 5 minutes.
+
+Zoom Files   Mo
+13   128     2.35709
+14   256     4.00154
+15   384     6.84954
+16   960     14.048
+17   3456    32.6334
+18   13824   79.1064
+.    19009   139.005
+```
+
+Ref. [https://switch2osm.org/manually-building-a-tile-server-18-04-lts](https://switch2osm.org/manually-building-a-tile-server-18-04-lts)
+
+## Stop containers
+
+By pressing Ctrl+C on the command line you can stop the container.
+
+The PostgreSQL database container is still running then (you can check with `docker ps`). If you want to stop the database container as well you can do so by running `docker-compose stop db` in the openstreetmap-carto directory.
 
 ## Troubleshooting
 

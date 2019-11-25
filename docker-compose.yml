@@ -41,3 +41,15 @@ services:
       - OSM2PGSQL_CACHE
       - OSM2PGSQL_NUMPROC
       - OSM2PGSQL_DATAFILE
+  render:
+    image: render:v1
+    build:
+      context: .
+      dockerfile: Dockerfile.render
+    volumes:
+      - .:/openstreetmap-carto
+    depends_on:
+      - db
+    environment:
+      - PGHOST=db
+      - PGUSER=postgres

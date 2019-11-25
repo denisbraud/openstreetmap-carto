@@ -67,4 +67,8 @@ kosmtik)
   # It needs Ctrl+C to be interrupted
   ;;
 
+render)
+  ./scripts/render.sh
+  ;;
+
 esac
