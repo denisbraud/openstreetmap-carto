@@ -101,6 +101,16 @@ Zoom Files   Mo
 
 Ref. [https://switch2osm.org/manually-building-a-tile-server-18-04-lts](https://switch2osm.org/manually-building-a-tile-server-18-04-lts)
 
+### Test Solution 2 : kosmtik export
+
+Defined your bounds (X Y min and max) and zooms (min and max) in scripts/kosmtik-export.sh.
+Use `docker exec -u 0 -it openstreetmap-carto_kosmtik_1 scripts/kosmtik-export.sh` to generate static tiles in data/export. 
+
+Advantages : simple : no need for an another docker container, add only one plugin (kosmtik-tiles-export) in kosmtik Dockerfile.
+Disadvantages : slower (5* than render solution 27mn vs 5mn), little bugs in generation (cutted names : z13 Fougères Sévigné, z14 rue de Paris, z15 Allée jules Noël) 
+
+Ref. [https://github.com/Joxit/docker-kosmtik#tiles-export](https://github.com/Joxit/docker-kosmtik#tiles-export)
+
 ## Stop containers
 
 By pressing Ctrl+C on the command line you can stop the container.
